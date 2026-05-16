@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pulse_db
+    username: postgres
+    password: ${DB_PASSWORD:ankush45} # GitHub par safe rahega, locally ankush45 utha lega
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  # WebSocket messages ke size aur timeout ko handle karne ke liye
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  main:
+    allow-circular-references: true
+
+# --- YAHAN GEMINI KEY RECTOR KO DIKHANE KE LIYE SAFE KI HAI ---
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:AIzaSyDaSrPpVTCJNBO8khISjYXed7MCwxNzUWk}
+
+# Chat server and security settings
+server:
+  port: 8080
+  error:
+    include-message: always
+
+# WebSocket Broker configurations (Optional but good for debugging)
+logging:
+  level:
+    org.springframework.web.socket: DEBUG
+    org.springframework.messaging: DEBUG
