@@ -1,0 +1,28 @@
+/* Skeleton.css */
+.skeleton-container {
+    width: 100%;
+    max-width: 470px;
+    margin: 20px auto;
+    border: 1px solid var(--border-color); 
+    border-radius: 8px;
+    background: var(--card-bg); 
+}
+
+.skeleton-blink {
+    background: var(--border-color);
+    background: linear-gradient(
+        110deg, 
+        var(--border-color) 8%, 
+        var(--bg-color) 18%, 
+        var(--border-color) 33%
+    );
+    border-radius: 4px;
+    background-size: 200% 100%;
+    animation: shine 1.5s linear infinite;
+}
+
+@keyframes shine {
+    to {
+        background-position-x: -200%;
+    }
+}
