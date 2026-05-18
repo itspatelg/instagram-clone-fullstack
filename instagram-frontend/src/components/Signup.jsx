@@ -22,7 +22,7 @@ const Signup = () => {
         
         try {
             // BACKEND CHECK: Mere backend mein agar "/signup" hai toh yahan bhi wahi rakha hai
-            const response = await axios.post('http://localhost:8080/api/auth/signup', formData);
+            const response = await API.post("/api/auth/signup", formData);
             
             console.log("Backend ka Jawab:", response.data);
             alert("Registration Successful! Mast kaam ho gaya.");
@@ -44,7 +44,7 @@ const Signup = () => {
             <div style={{ background: 'white', padding: '40px', border: '1px solid #dbdbdb', width: '350px', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '40px', marginBottom: '20px', fontWeight: 'bold', fontFamily: 'cursive' }}>Instagram</h1>
                 <p style={{ color: '#8e8e8e', fontWeight: 'bold', fontSize: '16px', marginBottom: '20px' }}>Sign up to see photos and videos from your friends.</p>
-                http://localhost:8080/api/auth/signup
+              
                 <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column' }}>
                     <input 
                         type="email" 
