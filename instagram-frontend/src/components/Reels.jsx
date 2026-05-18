@@ -8,7 +8,7 @@ const Reels = () => {
     useEffect(() => {
         const fetchReels = async () => {
             try {
-                const res = await axios.get('http://https://instagram-clone-fullstack-production.up.railway.app/api/posts/all');
+                const res = await axios.get('https://instagram-clone-fullstack-production.up.railway.app/api/posts/all');
                 // FIXED: res.data ki jagah res.data.posts
                 setReels(res.data.posts || []); 
             } catch (err) {

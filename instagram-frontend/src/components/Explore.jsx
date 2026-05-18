@@ -13,7 +13,7 @@ const Explore = () => {
     useEffect(() => {
         const fetchAllPosts = async () => {
             try {
-                const res = await axios.get('http://https://instagram-clone-fullstack-production.up.railway.app/api/posts/all');
+                const res = await axios.get('https://instagram-clone-fullstack-production.up.railway.app/api/posts/all');
                 // FIXED: Backend ab Map bhej raha hai { posts: [], isLast: boolean }
                 setPosts(res.data.posts || []); 
             } catch (err) {

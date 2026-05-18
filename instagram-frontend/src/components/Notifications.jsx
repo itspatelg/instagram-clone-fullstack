@@ -9,7 +9,7 @@ const Notifications = () => {
     const fetchNotifications = async () => {
         try {
             // Backend API call
-            const res = await axios.get(`http://https://instagram-clone-fullstack-production.up.railway.app/api/notifications?email=${userEmail}`);
+            const res = await axios.get(`https://instagram-clone-fullstack-production.up.railway.app/api/notifications?email=${userEmail}`);
             setNotifications(res.data);
         } catch (err) {
             console.error("Notifications fetch error:", err);

@@ -22,7 +22,7 @@ const AIChat = () => {
         setIsTyping(true);
 
         try {
-            const res = await axios.post('http://https://instagram-clone-fullstack-production.up.railway.app/api/ai/ask', { prompt: input });
+            const res = await axios.post('https://instagram-clone-fullstack-production.up.railway.app/api/ai/ask', { prompt: input });
             setMessages(prev => [...prev, { text: res.data.answer, isAI: true }]);
         } catch (err) {
             setMessages(prev => [...prev, { text: "Network locha ho gaya bhai!", isAI: true }]);

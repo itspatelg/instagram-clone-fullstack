@@ -35,7 +35,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
 
         try {
             // Seedha apne Java Backend (8080) ko call karo
-            const response = await axios.post('http://https://instagram-clone-fullstack-production.up.railway.app/api/posts/create', formData, {
+            const response = await axios.post('https://instagram-clone-fullstack-production.up.railway.app/api/posts/create', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
