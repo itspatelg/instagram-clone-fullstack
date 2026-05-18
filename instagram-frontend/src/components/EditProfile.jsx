@@ -15,7 +15,7 @@ const EditProfile = () => {
     // Purana data fetch karne ke liye (Optional but good)
     useEffect(() => {
         const fetchCurrentData = async () => {
-            const res = await axios.get(`http://localhost:8080/api/users/profile?username=${username}&currentUserEmail=${userEmail}`);
+            const res = await axios.get(`http://https://instagram-clone-fullstack-production.up.railway.app/api/users/profile?username=${username}&currentUserEmail=${userEmail}`);
             setFullName(res.data.fullName || "");
             setBio(res.data.bio || "");
         };
@@ -39,7 +39,7 @@ const EditProfile = () => {
             }
 
             // 2. Backend update call
-            await axios.post('http://localhost:8080/api/users/update', {
+            await axios.post('http://https://instagram-clone-fullstack-production.up.railway.app/api/users/update', {
                 email: userEmail,
                 fullName,
                 bio,

@@ -19,7 +19,7 @@ const Profile = () => {
 
     const fetchProfile = async () => {
         try {
-            const res = await axios.get(`http://localhost:8080/api/users/profile`, {
+            const res = await axios.get(`http://https://instagram-clone-fullstack-production.up.railway.app/api/users/profile`, {
                 params: { username: username, currentUserEmail: currentUserEmail }
             });
             setUserData(res.data);
@@ -41,7 +41,7 @@ const Profile = () => {
 
     const handleFollowToggle = async () => {
         try {
-            await axios.post('http://localhost:8080/api/users/follow', {
+            await axios.post('http://https://instagram-clone-fullstack-production.up.railway.app/api/users/follow', {
                 followerEmail: currentUserEmail,
                 followingUsername: username
             });
@@ -57,7 +57,7 @@ const Profile = () => {
         
         try {
             // Backend ko sahi status bhejo
-            const res = await axios.post(`http://localhost:8080/api/posts/${postId}/toggle-like`, { 
+            const res = await axios.post(`http://https://instagram-clone-fullstack-production.up.railway.app/api/posts/${postId}/toggle-like`, { 
                 email: currentUserEmail,
                 isLiked: isCurrentlyLiked // TRUE jayega agar pehle se liked hai
             });
@@ -94,7 +94,7 @@ const Profile = () => {
     const handleAddModalComment = async (postId) => {
         if (!modalComment.trim()) return;
         try {
-            await axios.post('http://localhost:8080/api/comments/add', {
+            await axios.post('http://https://instagram-clone-fullstack-production.up.railway.app/api/comments/add', {
                 postId: postId,
                 text: modalComment,
                 email: currentUserEmail

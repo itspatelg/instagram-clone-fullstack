@@ -49,7 +49,7 @@ const Home = () => {
         if (pageNum === 0) setIsLoading(true);
         else setIsFetchingMore(true);
         try {
-            const res = await axios.get(`http://localhost:8080/api/posts/feed`, {
+            const res = await axios.get(`http://https://instagram-clone-fullstack-production.up.railway.app/api/posts/feed`, {
                 params: { email: userEmail, page: pageNum, size: 5 }
             });
             const newPosts = res.data.posts;
@@ -61,7 +61,7 @@ const Home = () => {
 
     const fetchStories = async () => {
         try {
-            const res = await axios.get(`http://localhost:8080/api/stories/active`);
+            const res = await axios.get(`http://https://instagram-clone-fullstack-production.up.railway.app/api/stories/active`);
             setStories(res.data);
         } catch (err) { console.error("Stories error:", err); }
     };
@@ -99,7 +99,7 @@ const Home = () => {
         formData.append('file', file);
         formData.append('email', userEmail);
         try {
-            await axios.post('http://localhost:8080/api/stories/upload', formData);
+            await axios.post('http://https://instagram-clone-fullstack-production.up.railway.app/api/stories/upload', formData);
             await fetchStories();
             alert("Story upload ho gayi bhai! 🚀");
         } catch (err) { alert("Story upload nahi ho payi!"); }
@@ -113,7 +113,7 @@ const Home = () => {
             setTimeout(() => setShowBigHeart(null), 1000);
         }
         try {
-            await axios.post(`http://localhost:8080/api/posts/${postId}/toggle-like`, { isLiked: currentlyLiked, email: userEmail });
+            await axios.post(`http://https://instagram-clone-fullstack-production.up.railway.app/api/posts/${postId}/toggle-like`, { isLiked: currentlyLiked, email: userEmail });
             const newLikedPosts = new Set(likedPosts);
             currentlyLiked ? newLikedPosts.delete(postId) : newLikedPosts.add(postId);
             setLikedPosts(newLikedPosts);
@@ -125,9 +125,9 @@ const Home = () => {
         const text = commentInputs[postId];
         if (!text || text.trim() === "") return;
         try {
-            await axios.post('http://localhost:8080/api/comments/add', { postId, text, email: userEmail });
+            await axios.post('http://https://instagram-clone-fullstack-production.up.railway.app/api/comments/add', { postId, text, email: userEmail });
             setCommentInputs({ ...commentInputs, [postId]: "" });
-            const res = await axios.get(`http://localhost:8080/api/posts/feed?email=${userEmail}&page=0&size=${(page + 1) * 5}`);
+            const res = await axios.get(`http://https://instagram-clone-fullstack-production.up.railway.app/api/posts/feed?email=${userEmail}&page=0&size=${(page + 1) * 5}`);
             setPosts(res.data.posts);
         } catch (err) { console.error("Comment error:", err); }
     };

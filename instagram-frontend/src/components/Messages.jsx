@@ -17,7 +17,7 @@ const Messages = () => {
         if (!currentUserEmail) return;
 
         const connectWebSocket = () => {
-            const socket = new SockJS('http://localhost:8080/ws-chat');
+            const socket = new SockJS('http://https://instagram-clone-fullstack-production.up.railway.app/ws-chat');
             const client = Stomp.over(socket);
             client.debug = null; // Console saaf rakhne ke liye
 
@@ -51,7 +51,7 @@ const Messages = () => {
 
     useEffect(() => {
         if (selectedUser && currentUserEmail) {
-            axios.get(`http://localhost:8080/api/messages/history?user1=${currentUserEmail}&user2=${selectedUser.email}`)
+            axios.get(`http://https://instagram-clone-fullstack-production.up.railway.app/api/messages/history?user1=${currentUserEmail}&user2=${selectedUser.email}`)
                 .then(res => setMessages(res.data))
                 .catch(err => console.error("History fetch error:", err));
         }
@@ -59,7 +59,7 @@ const Messages = () => {
 
     const fetchUsers = async () => {
         try {
-            const res = await axios.get('http://localhost:8080/api/users/all');
+            const res = await axios.get('http://https://instagram-clone-fullstack-production.up.railway.app/api/users/all');
             setUserData(res.data.filter(u => u.email !== currentUserEmail));
         } catch (err) {
             console.error("Error fetching users:", err);

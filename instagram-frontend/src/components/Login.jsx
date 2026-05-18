@@ -11,7 +11,7 @@ const Login = () => {
         e.preventDefault();
         try {
             // FIX: Key ka naam 'email' hona chahiye kyunki AuthController 'email' dhund raha hai
-            const response = await axios.post('http://localhost:8080/api/auth/login', {
+            const response = await axios.post('http://https://instagram-clone-fullstack-production.up.railway.app/api/auth/login', {
                 email: email, 
                 password: password
             });
