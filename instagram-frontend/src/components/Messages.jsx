@@ -17,7 +17,7 @@ const Messages = () => {
         if (!currentUserEmail) return;
 
         const connectWebSocket = () => {
-            const socket = new SockJS('http://https://instagram-clone-fullstack-production.up.railway.app/ws-chat');
+            const socket = new SockJS("https://instagram-clone-fullstack-production.up.railway.app/ws-chat");
             const client = Stomp.over(socket);
             client.debug = null; // Console saaf rakhne ke liye
 
