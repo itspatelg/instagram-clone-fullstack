@@ -3,7 +3,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import CreatePostModal from './CreatePostModal';
 import { ThemeContext } from '../context/ThemeContext';
 
+
 const Sidebar = ({ setIsAuthenticated }) => {
+
+     const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+        return null;
+    }
     const navigate = useNavigate();
     const location = useLocation();
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
@@ -156,10 +163,14 @@ const Sidebar = ({ setIsAuthenticated }) => {
 
             <CreatePostModal 
                 isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
+                onClose={() => setIsModalOpen(false)}
+                
+                
             />
+            
         </>
     );
 };
+
 
 export default Sidebar;
