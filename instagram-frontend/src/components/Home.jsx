@@ -165,7 +165,9 @@ const Home = () => {
                         {posts.map(post => (
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} key={post.id} style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', marginBottom: '25px', borderRadius: '8px' }}>
                                 {/* Header */}
-                                <div style={{ padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ padding: '12px', display: 'flex', justifyContent: window.innerWidth <= 768
+    ? 'flex-start'
+    : 'center' }}>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <div style={{ fontWeight: 'bold', cursor: 'pointer', marginRight: '8px', color: 'var(--text-color)' }}>{post.user?.username}</div>
                                         {post.user?.email !== userEmail && (
