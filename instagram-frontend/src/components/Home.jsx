@@ -139,33 +139,30 @@ const Home = () => {
         backgroundColor: 'var(--bg-color)',
         minHeight: '100vh',
 
-        paddingLeft:
+        marginLeft:
             window.innerWidth <= 768
                 ? '0px'
                 : '240px',
-
-        display: 'flex',
-
-        justifyContent:
-            window.innerWidth <= 768
-                ? 'flex-start'
-                : 'center',
 
         color: 'var(--text-color)',
 
         transition: '0.3s'
     }}
 
+
     >
 
-            <div style={{
+          <div style={{
 
     width:
         window.innerWidth <= 768
             ? '100%'
             : '600px',
 
-    maxWidth: '600px',
+    maxWidth:
+        window.innerWidth <= 768
+            ? '100%'
+            : '600px',
 
     margin:
         window.innerWidth <= 768
@@ -174,10 +171,12 @@ const Home = () => {
 
     padding:
         window.innerWidth <= 768
-            ? '8px'
+            ? '10px'
             : '20px',
 
-    fontFamily: 'sans-serif'
+    fontFamily: 'sans-serif',
+
+    boxSizing: 'border-box'
 }}>
                 <StoryBar stories={stories} onStoryClick={(story) => setActiveStory(story)} onAddStory={handleAddStoryClick} />
                 <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleStoryUpload} accept="image/*" />
