@@ -144,7 +144,13 @@ const Home = () => {
         }}
     >
 
-            <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif' }}>
+            <div style={{
+    width: window.innerWidth <= 768 ? '100%' : '600px',
+    maxWidth: '600px',
+    margin: '0 auto',
+    padding: window.innerWidth <= 768 ? '10px' : '20px',
+    fontFamily: 'sans-serif'
+}}>
                 <StoryBar stories={stories} onStoryClick={(story) => setActiveStory(story)} onAddStory={handleAddStoryClick} />
                 <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleStoryUpload} accept="image/*" />
 
