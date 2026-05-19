@@ -133,12 +133,16 @@ const Home = () => {
     };
 
     return (
-        <div style={{ backgroundColor: 'var(--bg-color)', minHeight: '100vh', paddingLeft: '240px', color: 'var(--text-color)', transition: '0.3s' }}>
-            {isUploadingStory && (
-                <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <p style={{ fontWeight: 'bold', color: '#0095f6' }}>Story Uploading...</p>
-                </div>
-            )}
+    <div
+        className="home-container"
+        style={{
+            backgroundColor: 'var(--bg-color)',
+            minHeight: '100vh',
+            paddingLeft: window.innerWidth <= 768 ? '0px' : '240px',
+            color: 'var(--text-color)',
+            transition: '0.3s'
+        }}
+    >
 
             <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif' }}>
                 <StoryBar stories={stories} onStoryClick={(story) => setActiveStory(story)} onAddStory={handleAddStoryClick} />
