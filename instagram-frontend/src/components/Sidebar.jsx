@@ -6,7 +6,9 @@ import { ThemeContext } from '../context/ThemeContext';
 
 const Sidebar = ({ setIsAuthenticated }) => {
 
-    
+   
+const isMobile = window.innerWidth <= 768;
+
     const navigate = useNavigate();
     const location = useLocation();
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
@@ -58,57 +60,16 @@ const Sidebar = ({ setIsAuthenticated }) => {
 
     return (
         <>
-           <div style={{
-
-    width: window.innerWidth <= 768 ? '100%' : '240px',
-
-    height: window.innerWidth <= 768 ? '70px' : '100vh',
-
-    borderRight:
-        window.innerWidth <= 768
-            ? 'none'
-            : `1px solid var(--border-color)`,
-
-    borderTop:
-        window.innerWidth <= 768
-            ? `1px solid var(--border-color)`
-            : 'none',
-
-    position: 'fixed',
-
-    left: 0,
-
-    bottom: window.innerWidth <= 768 ? 0 : 'unset',
-
-    top: window.innerWidth <= 768 ? 'unset' : 0,
-
-    display: 'flex',
-
-    flexDirection:
-        window.innerWidth <= 768
-            ? 'row'
-            : 'column',
-
-    justifyContent:
-        window.innerWidth <= 768
-            ? 'space-around'
-            : 'flex-start',
-
-    alignItems: 'center',
-
-    padding:
-        window.innerWidth <= 768
-            ? '0px'
-            : '20px 12px',
-
-    backgroundColor: 'var(--card-bg)',
-
-    color: 'var(--text-color)',
-
-    zIndex: 100,
-
-    transition: 'all 0.3s'
-}}>
+            <div style={{
+                width: isMobile ? '75px' : '240px', height: '100vh', 
+                borderRight: `1px solid var(--border-color)`,
+                position: 'fixed', left: 0, top: 0, display: 'flex',
+                flexDirection: 'column', padding: '20px 12px', 
+                backgroundColor: 'var(--card-bg)', 
+                color: 'var(--text-color)', 
+                zIndex: 100,
+                transition: 'all 0.3s'
+            }}>
                 <h2 style={{ fontFamily: 'cursive', marginBottom: '30px', paddingLeft: '12px', cursor: 'pointer' }} onClick={() => navigate('/home')}>
                     Instagram
                 </h2>
@@ -135,8 +96,19 @@ const Sidebar = ({ setIsAuthenticated }) => {
                                     if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
                                 }}
                             >
-                                <span style={{ fontSize: '24px', marginRight: '16px' }}>{item.icon}</span>
-                                <span style={{ fontSize: '16px' }}>{item.name}</span>
+                                <span
+    style={{
+        fontSize: '24px',
+        marginRight: isMobile ? '0px' : '16px'
+    }}
+>
+    {item.icon}
+</span>
+                                {!isMobile && (
+    <span style={{ fontSize: '16px' }}>
+        {item.name}
+    </span>
+)}
                             </div>
                         );
                     })}
