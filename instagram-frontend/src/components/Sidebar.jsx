@@ -79,23 +79,26 @@ const isMobile = window.innerWidth <= 768;
     >
         ☰
     </div>
-)}
-            <div style={{
-                width: isMobile ? '75px' : '240px', height: '100vh', 
-                borderRight: `1px solid var(--border-color)`,
-                position: 'fixed',
+)}<div style={{
+    width: '240px',
+    height: '100vh',
+    borderRight: `1px solid var(--border-color)`,
+    position: 'fixed',
 
-left: isMobile
-    ? (isSidebarOpen ? '0' : '-260px')
-    : '0',
+    left: isMobile
+        ? (isSidebarOpen ? '0' : '-240px')
+        : '0',
 
-top: 0,
+    top: 0,
+
+    background: 'white',
 
 display: 'flex',
                 flexDirection: 'column', padding: '20px 12px', 
                 backgroundColor: 'var(--card-bg)', 
                 color: 'var(--text-color)', 
                zIndex: 1600,
+               background: 'white',
 transition: 'all 0.3s ease'
             }}>
                 <div
