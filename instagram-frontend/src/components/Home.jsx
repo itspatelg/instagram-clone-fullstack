@@ -139,10 +139,7 @@ const Home = () => {
         backgroundColor: 'var(--bg-color)',
         minHeight: '100vh',
 
-        marginLeft:
-            window.innerWidth <= 768
-                ? '0px'
-                : '240px',
+       
 
         color: 'var(--text-color)',
 
