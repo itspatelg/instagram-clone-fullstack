@@ -32,7 +32,7 @@ const AIChat = () => {
     };
 
     return (
-        <div style={{ marginLeft: '240px', padding: '20px', backgroundColor: 'var(--bg-color)', minHeight: '100vh', color: 'var(--text-color)' }}>
+        <div style={{ marginLeft: window.innerWidth <= 768 ? '0px' : '240px', padding: '20px', backgroundColor: 'var(--bg-color)', minHeight: '100vh', color: 'var(--text-color)' }}>
             <h2 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>AnkAI Assistant ✨</h2>
             
             <div style={{ height: '75vh', overflowY: 'auto', padding: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>

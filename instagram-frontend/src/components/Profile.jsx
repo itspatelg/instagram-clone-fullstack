@@ -112,7 +112,7 @@ const Profile = () => {
     const isOwnProfile = userData.email === currentUserEmail;
 
     return (
-        <div style={{ backgroundColor: '#fff', minHeight: '100vh', fontFamily: 'sans-serif', marginLeft: '240px' }}>
+        <div style={{ backgroundColor: '#fff', minHeight: '100vh', fontFamily: 'sans-serif', marginLeft: window.innerWidth <= 768 ? '0px' : '240px' }}>
             <div style={{ maxWidth: '935px', margin: '0 auto', padding: '30px 20px' }}>
                 {/* Header Section */}
                 <div style={{ display: 'flex', marginBottom: '44px', alignItems: 'center' }}>

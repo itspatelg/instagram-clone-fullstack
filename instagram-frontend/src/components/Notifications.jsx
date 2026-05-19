@@ -24,10 +24,10 @@ const Notifications = () => {
         }
     }, [userEmail]);
 
-    if (loading) return <div style={{ marginLeft: '240px', padding: '20px' }}>Loading notifications...</div>;
+    if (loading) return <div style={{marginLeft: window.innerWidth <= 768 ? '0px' : '240px', padding: '20px' }}>Loading notifications...</div>;
 
     return (
-        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', marginLeft: '240px', fontFamily: 'sans-serif' }}>
+        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', marginLeft: window.innerWidth <= 768 ? '0px' : '240px', fontFamily: 'sans-serif' }}>
             <h2 style={{ borderBottom: '1px solid #dbdbdb', paddingBottom: '10px', fontWeight: 'bold' }}>Notifications</h2>
             
             {notifications.length === 0 ? (

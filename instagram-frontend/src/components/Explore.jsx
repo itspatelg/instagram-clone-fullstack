@@ -25,14 +25,14 @@ const Explore = () => {
         fetchAllPosts();
     }, []);
 
-    if (loading) return <div style={{ textAlign: 'center', marginTop: '100px', marginLeft: '240px', color: 'var(--text-color)' }}>Loading Explore...</div>;
+    if (loading) return <div style={{ textAlign: 'center', marginTop: '100px', marginLeft: window.innerWidth <= 768 ? '0px' : '240px', color: 'var(--text-color)' }}>Loading Explore...</div>;
 
     return (
         <div style={{ 
             padding: '20px', 
             maxWidth: '935px', 
             margin: '0 auto', 
-            marginLeft: '240px',
+            marginLeft: window.innerWidth <= 768 ? '0px' : '240px',
             backgroundColor: 'var(--bg-color)', // Theme color
             minHeight: '100vh',
             color: 'var(--text-color)' // Theme text

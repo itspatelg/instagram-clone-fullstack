@@ -31,7 +31,7 @@ const Reels = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            marginLeft: '240px' // Sidebar gap fix
+            marginLeft: window.innerWidth <= 768 ? '0px' : '240px' // Sidebar gap fix
         }}>
             {reels.map((reel) => (
                 <div 
