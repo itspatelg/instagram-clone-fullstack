@@ -15,6 +15,7 @@ const isMobile = window.innerWidth <= 768;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const handleLogout = () => {
         localStorage.clear();
@@ -60,19 +61,78 @@ const isMobile = window.innerWidth <= 768;
 
     return (
         <>
+        {isMobile && (
+    <div
+        onClick={() => setIsSidebarOpen(true)}
+        style={{
+            position: 'fixed',
+            top: '15px',
+            left: '15px',
+            zIndex: 2000,
+            fontSize: '28px',
+            background: 'white',
+            padding: '5px 12px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+        }}
+    >
+        ☰
+    </div>
+)}
             <div style={{
                 width: isMobile ? '75px' : '240px', height: '100vh', 
                 borderRight: `1px solid var(--border-color)`,
-                position: 'fixed', left: 0, top: 0, display: 'flex',
+                position: 'fixed',
+
+left: isMobile
+    ? (isSidebarOpen ? '0' : '-260px')
+    : '0',
+
+top: 0,
+
+display: 'flex',
                 flexDirection: 'column', padding: '20px 12px', 
                 backgroundColor: 'var(--card-bg)', 
                 color: 'var(--text-color)', 
-                zIndex: 100,
-                transition: 'all 0.3s'
+               zIndex: 1600,
+transition: 'all 0.3s ease'
             }}>
-                <h2 style={{ fontFamily: 'cursive', marginBottom: '30px', paddingLeft: '12px', cursor: 'pointer' }} onClick={() => navigate('/home')}>
-                    Instagram
-                </h2>
+                <div
+    style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    }}
+>
+
+    <h2
+        style={{
+            fontFamily: 'cursive',
+            marginBottom: '30px',
+            paddingLeft: '12px',
+            cursor: 'pointer'
+        }}
+
+        onClick={() => navigate('/home')}
+    >
+        Instagram
+    </h2>
+
+    {isMobile && (
+        <span
+            onClick={() => setIsSidebarOpen(false)}
+            style={{
+                fontSize: '26px',
+                cursor: 'pointer',
+                marginBottom: '20px'
+            }}
+        >
+            ✖
+        </span>
+    )}
+
+</div>
                 
                 <div style={{ flex: 1 }}>
                     {menuItems.map((item) => {
@@ -123,8 +183,15 @@ const isMobile = window.innerWidth <= 768;
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-color)'}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                        <span style={{ fontSize: '24px', marginRight: '16px' }}>{isDarkMode ? '☀️' : '🌙'}</span>
-                        <span style={{ fontSize: '16px' }}>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                       <span style={{ fontSize: '24px', marginRight: isMobile ? '0px' : '16px' }}>
+    {isDarkMode ? '☀️' : '🌙'}
+</span>
+
+{!isMobile && (
+    <span style={{ fontSize: '16px' }}>
+        {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+    </span>
+)}
                     </div>
                 </div>
 
@@ -137,8 +204,13 @@ const isMobile = window.innerWidth <= 768;
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDarkMode ? '#2a0000' : '#fff1f1'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
-                    <span style={{ fontSize: '24px', marginRight: '16px' }}>🚪</span>
-                    <span>Logout</span>
+                   <span style={{ fontSize: '24px', marginRight: isMobile ? '0px' : '16px' }}>
+    🚪
+</span>
+
+{!isMobile && (
+    <span>Logout</span>
+)}
                 </div>
             </div>
 
