@@ -134,21 +134,49 @@ const Home = () => {
 
     return (
     <div
-        className="home-container"
-        style={{
-            backgroundColor: 'var(--bg-color)',
-            minHeight: '100vh',
-            paddingLeft: window.innerWidth <= 768 ? '0px' : '240px',
-            color: 'var(--text-color)',
-            transition: '0.3s'
-        }}
+    className="home-container"
+    style={{
+        backgroundColor: 'var(--bg-color)',
+        minHeight: '100vh',
+
+        paddingLeft:
+            window.innerWidth <= 768
+                ? '0px'
+                : '240px',
+
+        display: 'flex',
+
+        justifyContent:
+            window.innerWidth <= 768
+                ? 'flex-start'
+                : 'center',
+
+        color: 'var(--text-color)',
+
+        transition: '0.3s'
+    }}
+
     >
 
             <div style={{
-    width: window.innerWidth <= 768 ? '100%' : '600px',
+
+    width:
+        window.innerWidth <= 768
+            ? '100%'
+            : '600px',
+
     maxWidth: '600px',
-    margin: '0 auto',
-    padding: window.innerWidth <= 768 ? '10px' : '20px',
+
+    margin:
+        window.innerWidth <= 768
+            ? '0'
+            : '0 auto',
+
+    padding:
+        window.innerWidth <= 768
+            ? '8px'
+            : '20px',
+
     fontFamily: 'sans-serif'
 }}>
                 <StoryBar stories={stories} onStoryClick={(story) => setActiveStory(story)} onAddStory={handleAddStoryClick} />
