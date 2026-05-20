@@ -12,9 +12,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // Bhai yahan dhyan de, allowed origins mein "*" ya exact localhost:5173 hona chahiye
+
         registry.addEndpoint("/ws-chat")
-                .setAllowedOrigins("http://localhost:5173")
+
+                .setAllowedOriginPatterns("*")
+
                 .withSockJS();
     }
 
