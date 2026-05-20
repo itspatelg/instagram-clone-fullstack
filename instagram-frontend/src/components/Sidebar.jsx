@@ -95,11 +95,10 @@ const isMobile = window.innerWidth <= 768;
 
 display: 'flex',
                 flexDirection: 'column', padding: '20px 12px', 
-                backgroundColor: 'var(--card-bg)', 
-                color: 'var(--text-color)', 
-               zIndex: 1600,
-               background: 'white',
-transition: 'all 0.3s ease'
+                backgroundColor: 'white',
+                color: 'var(--text-color)',
+                zIndex: 1600,
+                transition: 'all 0.3s ease'
             }}>
                 <div
     style={{

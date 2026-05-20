@@ -152,32 +152,13 @@ const Home = () => {
 
     >
 
-          <div style={{
+          <div className="container-fluid">
 
-    width:
-        window.innerWidth <= 768
-            ? '100%'
-            : '600px',
+    <div className="row justify-content-center">
 
-    maxWidth:
-        window.innerWidth <= 768
-            ? '100%'
-            : '600px',
+        <div className="col-12 col-md-10 col-lg-7 p-2 p-md-4">
 
-    margin:
-        window.innerWidth <= 768
-            ? '0'
-            : '0 auto',
-
-    padding:
-        window.innerWidth <= 768
-            ? '10px'
-            : '20px',
-
-    fontFamily: 'sans-serif',
-
-    boxSizing: 'border-box'
-}}>
+            
                 <StoryBar stories={stories} onStoryClick={(story) => setActiveStory(story)} onAddStory={handleAddStoryClick} />
                 <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleStoryUpload} accept="image/*" />
 
@@ -254,6 +235,8 @@ const Home = () => {
                 )}
             </div>
         </div>
+     </div>
+ </div>
     );
 };
 
