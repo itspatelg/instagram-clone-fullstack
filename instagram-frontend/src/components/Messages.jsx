@@ -67,6 +67,7 @@ const Messages = () => {
     };
 
     const sendMessage = () => {
+        const isMobile = window.innerWidth <= 768;
         // Strict Check: Client hona chahiye, connected hona chahiye, aur user select hona chahiye
         if (connected && stompClient.current && messageInput.trim() && selectedUser) {
             const chatMessage = {
@@ -87,8 +88,17 @@ const Messages = () => {
     };
 
     return (
-        <div style={{ display: 'flex', height: '100vh', backgroundColor: '#fff', marginLeft: '220px' }}>
-            <div style={{ width: '350px', borderRight: '1px solid #dbdbdb', overflowY: 'auto' }}>
+        <div style={{ 
+    display: 'flex',
+    height: '100vh',
+    backgroundColor: '#fff',
+    marginLeft: window.innerWidth <= 768 ? '0' : '220px'
+}}>
+            <div style={{ 
+    width: window.innerWidth <= 768 ? '100px' : '350px',
+    borderRight: '1px solid #dbdbdb',
+    overflowY: 'auto'
+}}>
                 <div style={{ padding: '20px', borderBottom: '1px solid #dbdbdb', fontWeight: 'bold', fontSize: '20px' }}>
                     Messages 
                     <span style={{ marginLeft: '10px', fontSize: '12px', color: connected ? 'green' : 'red' }}>
@@ -162,7 +172,13 @@ const Messages = () => {
                     </>
                 ) : (
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <h3>Select a user to start chatting</h3>
+                        <h3 style={{
+    textAlign: 'center',
+    padding: '20px',
+    fontSize: window.innerWidth <= 768 ? '18px' : '24px'
+}}>
+    Select a user to start chatting
+</h3>
                     </div>
                 )}
             </div>
