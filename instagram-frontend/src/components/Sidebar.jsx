@@ -65,37 +65,54 @@ const Sidebar = ({ setIsAuthenticated }) => {
 
     return (
         <>
-            {/* 1. MOBILE HEADER BUTTONS (☰ Open Trigger) */}
+            {/* 1. FIXED MOBILE TOP HEADER NAVBAR (Story ko chipne se bachayega) */}
             {isMobile && (
-                <div
-                    onClick={() => setIsSidebarOpen(true)}
-                    style={{
-                        position: 'fixed',
-                        top: '12px',
-                        left: '12px',
-                        zIndex: 1500,
-                        fontSize: '24px',
-                        background: isDarkMode ? '#1a1a1a' : 'white',
-                        color: 'var(--text-color)',
-                        padding: '4px 12px',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        border: '1px solid var(--border-color)',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                    }}
-                >
-                    ☰
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '54px',
+                    background: isDarkMode ? '#1a1a1a' : 'white',
+                    color: 'var(--text-color)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0 16px',
+                    borderBottom: `1px solid var(--border-color)`,
+                    zIndex: 1500,
+                    boxShadow: '0 1px 5px rgba(0,0,0,0.05)'
+                }}>
+                    {/* Cursive Brand Text Left Side */}
+                    <h3 
+                        style={{ fontFamily: 'cursive', margin: 0, fontSize: '22px', cursor: 'pointer' }} 
+                        onClick={() => navigate('/home')}
+                    >
+                        Instagram
+                    </h3>
+                    
+                    {/* Hamburger Trigger Menu Right Side */}
+                    <div
+                        onClick={() => setIsSidebarOpen(true)}
+                        style={{
+                            fontSize: '24px',
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                            userSelect: 'none'
+                        }}
+                    >
+                        ☰
+                    </div>
                 </div>
             )}
 
             {/* 2. MAIN SIDEBAR BODY */}
             <div style={{
-                width: isMobile ? '100%' : '240px', // Mobile par full overlay view banega taki gap na dikhe
+                width: isMobile ? '100%' : '240px', 
                 maxWidth: '260px',
                 height: '100vh',
                 borderRight: isMobile ? 'none' : `1px solid var(--border-color)`,
                 position: 'fixed',
-                // Slide in/out animation logic
                 left: isMobile ? (isSidebarOpen ? '0' : '-280px') : '0',
                 top: 0,
                 background: isDarkMode ? '#1a1a1a' : 'white',
@@ -151,7 +168,7 @@ const Sidebar = ({ setIsAuthenticated }) => {
                                 onClick={item.action ? () => { item.action(); if(isMobile && item.name !== 'Search') setIsSidebarOpen(false); } : () => {
                                     setIsSearchOpen(false);
                                     navigate(item.path);
-                                    if (isMobile) setIsSidebarOpen(false); // Mobile pe click karte hi auto-close
+                                    if (isMobile) setIsSidebarOpen(false); 
                                 }}
                                 style={{
                                     display: 'flex', alignItems: 'center', padding: '12px',
@@ -216,7 +233,7 @@ const Sidebar = ({ setIsAuthenticated }) => {
             <div style={{
                 position: 'fixed',
                 left: isSearchOpen ? (isMobile ? '0' : '240px') : '-360px',
-                top: isMobile ? '60px' : 0, 
+                top: isMobile ? '54px' : 0, 
                 width: isMobile ? '100%' : '350px', 
                 height: isMobile ? 'auto' : '100vh',
                 backgroundColor: 'var(--card-bg)', 

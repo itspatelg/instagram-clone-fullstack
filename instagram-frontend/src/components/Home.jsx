@@ -3,16 +3,16 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import StoryBar from '../components/StoryBar';
 import StoryViewer from '../components/StoryViewer';
-import { ThemeContext } from '../context/ThemeContext'; // Context import kiya
+import { ThemeContext } from '../context/ThemeContext';
 
-// --- SKELETON COMPONENT (Variables ke saath) ---
+// --- SKELETON COMPONENT ---
 const SkeletonPost = () => (
     <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', marginBottom: '25px', borderRadius: '8px', overflow: 'hidden' }}>
         <div style={{ padding: '12px', display: 'flex', alignItems: 'center' }}>
             <div className="skeleton-blink" style={{ width: '32px', height: '32px', borderRadius: '50%' }}></div>
             <div className="skeleton-blink" style={{ width: '100px', height: '15px', marginLeft: '10px' }}></div>
         </div>
-        <div className="skeleton-blink" style={{ width: '100%', height: '400px' }}></div>
+        <div className="skeleton-blink" style={{ width: '100%', height: '350px' }}></div>
         <style>{`
             .skeleton-blink {
                 background: var(--border-color);
@@ -26,7 +26,7 @@ const SkeletonPost = () => (
 );
 
 const Home = () => {
-    const { isDarkMode } = useContext(ThemeContext); // Theme state access kiya
+    const { isDarkMode } = useContext(ThemeContext);
     const [posts, setPosts] = useState([]);
     const [stories, setStories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +36,9 @@ const Home = () => {
     const [likedPosts, setLikedPosts] = useState(new Set());
     const [showBigHeart, setShowBigHeart] = useState(null);
 
+    // --- RESPONSIVE STATE ---
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
     // --- PAGINATION STATES ---
     const [page, setPage] = useState(0); 
     const [hasMore, setHasMore] = useState(true); 
@@ -43,6 +46,12 @@ const Home = () => {
 
     const fileInputRef = useRef(null);
     const userEmail = localStorage.getItem('userEmail'); 
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // --- FETCH DATA ---
     const fetchPosts = async (pageNum = 0) => {
@@ -132,111 +141,139 @@ const Home = () => {
         } catch (err) { console.error("Comment error:", err); }
     };
 
+    const handleFollowToggle = async (usernameToFollow) => {
+        try {
+            await axios.post('https://instagram-clone-fullstack-production.up.railway.app/api/users/follow', {
+                followerEmail: userEmail,
+                followingUsername: usernameToFollow
+            });
+            // Instant state modification for following/unfollowing toggle feed level
+            setPosts(prev => prev.map(p => p.user?.username === usernameToFollow ? { ...p, followedByCurrentUser: !p.followedByCurrentUser } : p));
+        } catch (err) { console.error("Follow handle error:", err); }
+    };
+
     return (
-    <div
-    className="home-container"
-    style={{
-        backgroundColor: 'var(--bg-color)',
-        minHeight: '100vh',
+        <div
+            className="home-container"
+            style={{
+                backgroundColor: 'var(--bg-color)',
+                minHeight: '100vh',
+                color: 'var(--text-color)',
+                transition: '0.3s',
+                paddingTop: isMobile ? '15px' : '30px'
+            }}
+        >
+            <div className="container-fluid">
+                <div className="row justify-content-center g-0">
+                    <div className="col-12 col-md-9 col-lg-6 px-1 px-md-3">
+                        
+                        {/* Story Panel */}
+                        <div style={{ marginBottom: '15px', width: '100%', overflowX: 'auto' }}>
+                            <StoryBar stories={stories} onStoryClick={(story) => setActiveStory(story)} onAddStory={handleAddStoryClick} />
+                        </div>
+                        <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleStoryUpload} accept="image/*" />
 
-        margin:
-    window.innerWidth <= 768
-        ? '0 0 0 -230px'
-        : '0 auto',
+                        <AnimatePresence>
+                            {activeStory && <StoryViewer story={activeStory} onClose={() => setActiveStory(null)} />}
+                        </AnimatePresence>
 
-        color: 'var(--text-color)',
+                        {isLoading ? (
+                            [1, 2, 3].map(n => <SkeletonPost key={n} />)
+                        ) : (
+                            <>
+                                {posts.map(post => (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 20 }} 
+                                        animate={{ opacity: 1, y: 0 }} 
+                                        key={post.id} 
+                                        style={{ 
+                                            background: 'var(--card-bg)', 
+                                            border: '1px solid var(--border-color)', 
+                                            marginBottom: '20px', 
+                                            borderRadius: '8px',
+                                            overflow: 'hidden'
+                                        }}
+                                    >
+                                        {/* Header */}
+                                        <div style={{ padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div style={{ fontWeight: 'bold', cursor: 'pointer', marginRight: '8px', color: 'var(--text-color)', fontSize: '15px' }}>
+                                                    {post.user?.username}
+                                                </div>
+                                                {post.user?.email !== userEmail && (
+                                                    <button onClick={() => handleFollowToggle(post.user.username)} style={{ background: 'none', border: 'none', color: post.followedByCurrentUser ? 'var(--secondary-text)' : '#0095f6', fontWeight: 'bold', cursor: 'pointer', fontSize: '13px', padding: '0' }}>
+                                                        • {post.followedByCurrentUser ? 'Following' : 'Follow'}
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <span style={{ fontWeight: 'bold', cursor: 'pointer', color: 'var(--text-color)', letterSpacing: '1px' }}>•••</span>
+                                        </div>
 
-        transition: '0.3s'
-    }}
+                                        {/* Image Section Fixed Height */}
+                                        <div style={{ position: 'relative', cursor: 'pointer', overflow: 'hidden', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onDoubleClick={() => handleToggleLike(post.id)}>
+                                            <img 
+                                                src={post.imageUrl} 
+                                                alt="post" 
+                                                style={{ 
+                                                    width: '100%', 
+                                                    maxHeight: isMobile ? '400px' : '500px', 
+                                                    objectFit: 'contain',
+                                                    display: 'block'
+                                                }} 
+                                            />
+                                            <AnimatePresence>
+                                                {showBigHeart === post.id && (
+                                                    <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1.3, opacity: 1 }} exit={{ scale: 0, opacity: 0 }} style={{ position: 'absolute', fontSize: '70px', zIndex: 10, pointerEvents: 'none' }}>❤️</motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
 
+                                        {/* Actions & Content */}
+                                        <div style={{ padding: '12px' }}>
+                                            <div style={{ display: 'flex', gap: '16px', marginBottom: '8px' }}>
+                                                <motion.span whileTap={{ scale: 1.3 }} onClick={() => handleToggleLike(post.id)} style={{ cursor: 'pointer', fontSize: '22px', color: likedPosts.has(post.id) ? '#ed4956' : 'var(--text-color)' }}>
+                                                    {likedPosts.has(post.id) ? '❤️' : '🤍'}
+                                                </motion.span>
+                                                <span style={{ fontSize: '22px', cursor: 'pointer', color: 'var(--text-color)' }}>💬</span>
+                                            </div>
+                                            
+                                            <div style={{ fontWeight: 'bold', marginBottom: '6px', color: 'var(--text-color)', fontSize: '14px' }}>
+                                                {post.likesCount || 0} likes
+                                            </div>
+                                            
+                                            <div style={{ marginBottom: '8px', color: 'var(--text-color)', fontSize: '14px', lineBreak: 'anywhere' }}>
+                                                <span style={{ fontWeight: 'bold', marginRight: '8px' }}>{post.user?.username}</span>
+                                                {post.caption}
+                                            </div>
 
-    >
+                                            {/* Comments Mapping Section */}
+                                            {post.comments && post.comments.length > 0 && (
+                                                <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '8px', marginTop: '8px' }}>
+                                                    {post.comments.map((comment, idx) => (
+                                                        <motion.div key={comment.id} initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.03 }} style={{ marginBottom: '4px', fontSize: '13px', color: 'var(--text-color)' }}>
+                                                            <span style={{ fontWeight: 'bold', marginRight: '6px' }}>{comment.user?.username}</span>
+                                                            {comment.text}
+                                                        </motion.div>
+                                                    ))}
+                                                </div>
+                                            )}
 
-          <div className="container-fluid">
-
-    <div className="row justify-content-center">
-
-        <div className="col-12 col-md-10 col-lg-7 p-2 p-md-4">
-
-            
-                <StoryBar stories={stories} onStoryClick={(story) => setActiveStory(story)} onAddStory={handleAddStoryClick} />
-                <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleStoryUpload} accept="image/*" />
-
-                <AnimatePresence>
-                    {activeStory && <StoryViewer story={activeStory} onClose={() => setActiveStory(null)} />}
-                </AnimatePresence>
-
-                {isLoading ? (
-                    [1, 2, 3].map(n => <SkeletonPost key={n} />)
-                ) : (
-                    <>
-                        {posts.map(post => (
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} key={post.id} style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', marginBottom: '25px', borderRadius: '8px' }}>
-                                {/* Header */}
-                                <div style={{ padding: '12px', display: 'flex', justifyContent: window.innerWidth <= 768
-    ? 'flex-start'
-    : 'center' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <div style={{ fontWeight: 'bold', cursor: 'pointer', marginRight: '8px', color: 'var(--text-color)' }}>{post.user?.username}</div>
-                                        {post.user?.email !== userEmail && (
-                                            <button onClick={() => handleFollowToggle(post.user.username)} style={{ background: 'none', border: 'none', color: post.followedByCurrentUser ? 'var(--secondary-text)' : '#0095f6', fontWeight: 'bold', cursor: 'pointer', fontSize: '14px', padding: '0' }}>
-                                                • {post.followedByCurrentUser ? 'Following' : 'Follow'}
-                                            </button>
-                                        )}
-                                    </div>
-                                    <span style={{ fontWeight: 'bold', cursor: 'pointer', color: 'var(--text-color)' }}>•••</span>
-                                </div>
-
-                                {/* Image Section */}
-                                <div style={{ position: 'relative', cursor: 'pointer', overflow: 'hidden' }} onDoubleClick={() => handleToggleLike(post.id)}>
-                                    <img src={post.imageUrl} alt="post" style={{ width: '100%', display: 'block' }} />
-                                    <AnimatePresence>
-                                        {showBigHeart === post.id && (
-                                            <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1.5, opacity: 1 }} exit={{ scale: 0, opacity: 0 }} style={{ position: 'absolute', top: '40%', left: '42%', fontSize: '80px', zIndex: 10, pointerEvents: 'none' }}>❤️</motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-
-                                {/* Actions & Content */}
-                                <div style={{ padding: '12px' }}>
-                                    <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
-                                        <motion.span key={likedPosts.has(post.id) ? 'liked' : 'unliked'} whileTap={{ scale: 1.4 }} onClick={() => handleToggleLike(post.id)} style={{ cursor: 'pointer', fontSize: '24px', color: likedPosts.has(post.id) ? '#ed4956' : 'var(--text-color)' }}>
-                                            {likedPosts.has(post.id) ? '❤️' : '🤍'}
-                                        </motion.span>
-                                        <span style={{ fontSize: '24px', cursor: 'pointer', color: 'var(--text-color)' }}>💬</span>
-                                    </div>
-                                    <div style={{ fontWeight: 'bold', marginBottom: '5px', color: 'var(--text-color)' }}>{post.likesCount || 0} likes</div>
-                                    <div style={{ marginBottom: '10px', color: 'var(--text-color)' }}>
-                                        <span style={{ fontWeight: 'bold', marginRight: '8px' }}>{post.user?.username}</span>
-                                        {post.caption}
-                                    </div>
-
-                                    {/* Comments */}
-                                    <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
-                                        {post.comments?.map((comment, idx) => (
-                                            <motion.div key={comment.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }} style={{ marginBottom: '5px', fontSize: '14px', color: 'var(--text-color)' }}>
-                                                <span style={{ fontWeight: 'bold', marginRight: '5px' }}>{comment.user?.username}</span>
-                                                {comment.text}
-                                            </motion.div>
-                                        ))}
-                                    </div>
-
-                                    {/* Comment Input */}
-                                    <div style={{ marginTop: '10px', display: 'flex', borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
-                                        <input type="text" placeholder="Add a comment..." value={commentInputs[post.id] || ""} onChange={(e) => setCommentInputs({ ...commentInputs, [post.id]: e.target.value })} onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)} style={{ border: 'none', width: '100%', outline: 'none', fontSize: '14px', background: 'transparent', color: 'var(--text-color)' }} />
-                                        <button onClick={() => handleAddComment(post.id)} style={{ border: 'none', background: 'none', color: '#0095f6', fontWeight: 'bold', cursor: 'pointer' }}>Post</button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                        {isFetchingMore && <div style={{ textAlign: 'center', padding: '20px', fontWeight: 'bold', color: 'var(--secondary-text)' }}>Loading more posts...</div>}
-                        {!hasMore && posts.length > 0 && <div style={{ textAlign: 'center', padding: '20px', color: 'var(--secondary-text)' }}>No more posts to show. 🎉</div>}
-                    </>
-                )}
+                                            {/* Comment Input Fields */}
+                                            <div style={{ marginTop: '10px', display: 'flex', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
+                                                <input type="text" placeholder="Add a comment..." value={commentInputs[post.id] || ""} onChange={(e) => setCommentInputs({ ...commentInputs, [post.id]: e.target.value })} onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)} style={{ border: 'none', width: '100%', outline: 'none', fontSize: '13px', background: 'transparent', color: 'var(--text-color)' }} />
+                                                <button onClick={() => handleAddComment(post.id)} style={{ border: 'none', background: 'none', color: '#0095f6', fontWeight: 'bold', cursor: 'pointer', fontSize: '13px' }}>Post</button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                                {isFetchingMore && <div style={{ textAlign: 'center', padding: '15px', fontSize: '13px', fontWeight: 'bold', color: 'var(--secondary-text)' }}>Loading more posts...</div>}
+                                {!hasMore && posts.length > 0 && <div style={{ textAlign: 'center', padding: '15px', fontSize: '13px', color: 'var(--secondary-text)' }}>No more posts to show. 🎉</div>}
+                            </>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
-     </div>
- </div>
     );
 };
 
