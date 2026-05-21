@@ -1,13 +1,18 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CreatePostModal from './CreatePostModal';
 import { ThemeContext } from '../context/ThemeContext';
 
-
 const Sidebar = ({ setIsAuthenticated }) => {
+    // Real-time resize listener taaki mobile state kabhi fail na ho
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-   
-const isMobile = window.innerWidth <= 768;
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -15,7 +20,6 @@ const isMobile = window.innerWidth <= 768;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const handleLogout = () => {
         localStorage.clear();
@@ -50,7 +54,7 @@ const isMobile = window.innerWidth <= 768;
             name: 'AnkAI Assistant', 
             icon: '✨', 
             path: '/ai-chat' 
-        }, // AI Chat Option Add Kiya
+        },
         { 
             name: 'Create', 
             icon: '➕', 
@@ -61,90 +65,93 @@ const isMobile = window.innerWidth <= 768;
 
     return (
         <>
-        {isMobile && (
-    <div
-        onClick={() => setIsSidebarOpen(true)}
-        style={{
-            position: 'fixed',
-            top: '15px',
-            left: '15px',
-            zIndex: 2000,
-            fontSize: '28px',
-            background: 'white',
-            padding: '5px 12px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
-        }}
-    >
-        ☰
-    </div>
-)}<div style={{
-    width: '240px',
-    height: '100vh',
-    borderRight: `1px solid var(--border-color)`,
-    position: 'fixed',
+            {/* 1. MOBILE HEADER BUTTONS (☰ Open Trigger) */}
+            {isMobile && (
+                <div
+                    onClick={() => setIsSidebarOpen(true)}
+                    style={{
+                        position: 'fixed',
+                        top: '12px',
+                        left: '12px',
+                        zIndex: 1500,
+                        fontSize: '24px',
+                        background: isDarkMode ? '#1a1a1a' : 'white',
+                        color: 'var(--text-color)',
+                        padding: '4px 12px',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        border: '1px solid var(--border-color)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}
+                >
+                    ☰
+                </div>
+            )}
 
-    left: isMobile
-        ? (isSidebarOpen ? '0' : '-240px')
-        : '0',
-
-    top: 0,
-
-    background: 'white',
-
-display: 'flex',
-                flexDirection: 'column', padding: '20px 12px', 
-                backgroundColor: 'white',
+            {/* 2. MAIN SIDEBAR BODY */}
+            <div style={{
+                width: isMobile ? '100%' : '240px', // Mobile par full overlay view banega taki gap na dikhe
+                maxWidth: '260px',
+                height: '100vh',
+                borderRight: isMobile ? 'none' : `1px solid var(--border-color)`,
+                position: 'fixed',
+                // Slide in/out animation logic
+                left: isMobile ? (isSidebarOpen ? '0' : '-280px') : '0',
+                top: 0,
+                background: isDarkMode ? '#1a1a1a' : 'white',
+                display: 'flex',
+                flexDirection: 'column', 
+                padding: '20px 12px', 
+                backgroundColor: isDarkMode ? '#1a1a1a' : 'white',
                 color: 'var(--text-color)',
                 zIndex: 1600,
-                transition: 'all 0.3s ease'
+                transition: 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: isMobile && isSidebarOpen ? '5px 0 15px rgba(0,0,0,0.2)' : 'none'
             }}>
-                <div
-    style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    }}
->
-
-    <h2
-        style={{
-            fontFamily: 'cursive',
-            marginBottom: '30px',
-            paddingLeft: '12px',
-            cursor: 'pointer'
-        }}
-
-        onClick={() => navigate('/home')}
-    >
-        Instagram
-    </h2>
-
-    {isMobile && (
-        <span
-            onClick={() => setIsSidebarOpen(false)}
-            style={{
-                fontSize: '26px',
-                cursor: 'pointer',
-                marginBottom: '20px'
-            }}
-        >
-            ✖
-        </span>
-    )}
-
-</div>
                 
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2
+                        style={{
+                            fontFamily: 'cursive',
+                            marginBottom: '30px',
+                            paddingLeft: '12px',
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                            navigate('/home');
+                            if (isMobile) setIsSidebarOpen(false);
+                        }}
+                    >
+                        Instagram
+                    </h2>
+
+                    {/* Mobile Close Button (✖) */}
+                    {isMobile && (
+                        <span
+                            onClick={() => setIsSidebarOpen(false)}
+                            style={{
+                                fontSize: '24px',
+                                cursor: 'pointer',
+                                marginBottom: '25px',
+                                paddingRight: '10px'
+                            }}
+                        >
+                            ✖
+                        </span>
+                    )}
+                </div>
+                
+                {/* MENU ITEMS LIST */}
                 <div style={{ flex: 1 }}>
                     {menuItems.map((item) => {
                         const isActive = location.pathname === item.path;
                         return (
                             <div 
                                 key={item.name}
-                                onClick={item.action ? item.action : () => {
+                                onClick={item.action ? () => { item.action(); if(isMobile && item.name !== 'Search') setIsSidebarOpen(false); } : () => {
                                     setIsSearchOpen(false);
                                     navigate(item.path);
+                                    if (isMobile) setIsSidebarOpen(false); // Mobile pe click karte hi auto-close
                                 }}
                                 style={{
                                     display: 'flex', alignItems: 'center', padding: '12px',
@@ -158,23 +165,17 @@ display: 'flex',
                                     if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
                                 }}
                             >
-                                <span
-    style={{
-        fontSize: '24px',
-        marginRight: isMobile ? '0px' : '16px'
-    }}
->
-    {item.icon}
-</span>
-                                {!isMobile && (
-    <span style={{ fontSize: '16px' }}>
-        {item.name}
-    </span>
-)}
+                                <span style={{ fontSize: '22px', marginRight: '16px' }}>
+                                    {item.icon}
+                                </span>
+                                <span style={{ fontSize: '16px' }}>
+                                    {item.name}
+                                </span>
                             </div>
                         );
                     })}
 
+                    {/* THEME TOGGLE BUTTON */}
                     <div 
                         onClick={toggleTheme}
                         style={{
@@ -185,18 +186,16 @@ display: 'flex',
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-color)'}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                       <span style={{ fontSize: '24px', marginRight: isMobile ? '0px' : '16px' }}>
-    {isDarkMode ? '☀️' : '🌙'}
-</span>
-
-{!isMobile && (
-    <span style={{ fontSize: '16px' }}>
-        {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-    </span>
-)}
+                        <span style={{ fontSize: '22px', marginRight: '16px' }}>
+                            {isDarkMode ? '☀️' : '🌙'}
+                        </span>
+                        <span style={{ fontSize: '16px' }}>
+                            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                        </span>
                     </div>
                 </div>
 
+                {/* LOGOUT BUTTON */}
                 <div 
                     onClick={handleLogout}
                     style={{ 
@@ -206,30 +205,34 @@ display: 'flex',
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDarkMode ? '#2a0000' : '#fff1f1'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
-                   <span style={{ fontSize: '24px', marginRight: isMobile ? '0px' : '16px' }}>
-    🚪
-</span>
-
-{!isMobile && (
-    <span>Logout</span>
-)}
+                    <span style={{ fontSize: '22px', marginRight: '16px' }}>
+                        🚪
+                    </span>
+                    <span>Logout</span>
                 </div>
             </div>
 
+            {/* 3. SEARCH DRAWER */}
             <div style={{
                 position: 'fixed',
-                left: isSearchOpen ? '240px' : '-110px',
-                top: 0, width: '350px', height: '100vh',
+                left: isSearchOpen ? (isMobile ? '0' : '240px') : '-360px',
+                top: isMobile ? '60px' : 0, 
+                width: isMobile ? '100%' : '350px', 
+                height: isMobile ? 'auto' : '100vh',
                 backgroundColor: 'var(--card-bg)', 
                 color: 'var(--text-color)', 
-                borderRight: `1px solid var(--border-color)`,
-                borderTopRightRadius: '16px', borderBottomRightRadius: '16px',
-                zIndex: 90, padding: '25px', boxShadow: '10px 0 20px rgba(0,0,0,0.2)',
+                borderRight: isMobile ? 'none' : `1px solid var(--border-color)`,
+                borderBottom: isMobile ? `1px solid var(--border-color)` : 'none',
+                borderTopRightRadius: isMobile ? '0' : '16px', 
+                borderBottomRightRadius: isMobile ? '0' : '16px',
+                zIndex: 1550, 
+                padding: '25px', 
+                boxShadow: '10px 0 20px rgba(0,0,0,0.15)',
                 transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 opacity: isSearchOpen ? 1 : 0,
                 visibility: isSearchOpen ? 'visible' : 'hidden'
             }}>
-                <h2 style={{ marginBottom: '30px', fontSize: '24px' }}>Search</h2>
+                <h2 style={{ marginBottom: '20px', fontSize: '22px' }}>Search</h2>
                 <input 
                     type="text" 
                     placeholder="Search username..." 
@@ -237,9 +240,9 @@ display: 'flex',
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={handleSearchSubmit}
                     style={{
-                        width: '100%', padding: '12px 16px', borderRadius: '8px',
-                        border: 'none', backgroundColor: 'var(--bg-color)', 
-                        color: 'var(--text-color)', outline: 'none', fontSize: '16px'
+                        width: '100%', padding: '10px 16px', borderRadius: '8px',
+                        border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-color)', 
+                        color: 'var(--text-color)', outline: 'none', fontSize: '15px'
                     }}
                 />
             </div>
@@ -247,13 +250,9 @@ display: 'flex',
             <CreatePostModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)}
-                
-                
             />
-            
         </>
     );
 };
-
 
 export default Sidebar;

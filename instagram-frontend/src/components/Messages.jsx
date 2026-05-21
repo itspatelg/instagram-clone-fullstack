@@ -8,10 +8,18 @@ const Messages = () => {
     const [userData, setUserData] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [messageInput, setMessageInput] = useState("");
-    const [connected, setConnected] = useState(false); // Connection track karne ke liye
+    const [connected, setConnected] = useState(false); 
     const stompClient = useRef(null);
     
+    // Dynamic screen resize listener
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const currentUserEmail = localStorage.getItem('userEmail');
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         if (!currentUserEmail) return;
@@ -19,14 +27,13 @@ const Messages = () => {
         const connectWebSocket = () => {
             const socket = new SockJS("https://instagram-clone-fullstack-production.up.railway.app/ws-chat");
             const client = Stomp.over(socket);
-            client.debug = null; // Console saaf rakhne ke liye
+            client.debug = null; 
 
             client.connect({}, (frame) => {
                 console.log('Connected: ' + frame);
                 stompClient.current = client;
                 setConnected(true);
 
-                // Subscribe only AFTER connection
                 client.subscribe(`/user/${currentUserEmail}/queue/messages`, (payload) => {
                     const newMessage = JSON.parse(payload.body);
                     setMessages((prev) => [...prev, newMessage]);
@@ -34,7 +41,6 @@ const Messages = () => {
             }, (error) => {
                 console.error('STOMP error:', error);
                 setConnected(false);
-                // 5 second baad reconnect karne ki koshish karega
                 setTimeout(connectWebSocket, 5000);
             });
         };
@@ -67,8 +73,6 @@ const Messages = () => {
     };
 
     const sendMessage = () => {
-        const isMobile = window.innerWidth <= 768;
-        // Strict Check: Client hona chahiye, connected hona chahiye, aur user select hona chahiye
         if (connected && stompClient.current && messageInput.trim() && selectedUser) {
             const chatMessage = {
                 senderEmail: currentUserEmail,
@@ -89,99 +93,121 @@ const Messages = () => {
 
     return (
         <div style={{ 
-    display: 'flex',
-    height: '100vh',
-    backgroundColor: '#fff',
-    marginLeft: window.innerWidth <= 768 ? '0' : '220px'
-}}>
-            <div style={{ 
-    width: window.innerWidth <= 768 ? '100px' : '350px',
-    borderRight: '1px solid #dbdbdb',
-    overflowY: 'auto'
-}}>
-                <div style={{ padding: '20px', borderBottom: '1px solid #dbdbdb', fontWeight: 'bold', fontSize: '20px' }}>
-                    Messages 
-                    <span style={{ marginLeft: '10px', fontSize: '12px', color: connected ? 'green' : 'red' }}>
-                        {connected ? '● Online' : '● Connecting...'}
-                    </span>
+            display: 'flex',
+            height: '100vh',
+            backgroundColor: '#fff',
+            marginLeft: isMobile ? '0' : '240px',
+            paddingTop: isMobile ? '60px' : '0px',
+            transition: 'all 0.3s ease'
+        }}>
+            {/* LEFT USER LIST PANEL */}
+            {(!isMobile || !selectedUser) && (
+                <div style={{ 
+                    width: isMobile ? '100%' : '350px',
+                    borderRight: '1px solid #dbdbdb',
+                    overflowY: 'auto',
+                    height: '100%'
+                }}>
+                    <div style={{ padding: '20px', borderBottom: '1px solid #dbdbdb', fontWeight: 'bold', fontSize: '20px' }}>
+                        Messages 
+                        <span style={{ marginLeft: '10px', fontSize: '12px', color: connected ? 'green' : 'red' }}>
+                            {connected ? '● Online' : '● Connecting...'}
+                        </span>
+                    </div>
+                    {userData.map(user => (
+                        <div 
+                            key={user.id} 
+                            onClick={() => setSelectedUser(user)}
+                            style={{ 
+                                padding: '15px 20px', 
+                                cursor: 'pointer', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                backgroundColor: selectedUser?.id === user.id ? '#efefef' : 'transparent',
+                                borderBottom: '1px solid #f7f7f7'
+                            }}
+                        >
+                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#dbdbdb', marginRight: '12px', overflow:'hidden' }}>
+                                {user.profilePictureUrl ? <img src={user.profilePictureUrl} style={{width:'100%', height:'100%', objectFit:'cover'}} alt="dp"/> : <div style={{padding:'10px'}}>👤</div>}
+                            </div>
+                            <div>
+                                <div style={{ fontWeight: '600' }}>{user.username}</div>
+                                <div style={{ fontSize: '12px', color: '#8e8e8e' }}>{user.email}</div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-                {userData.map(user => (
-                    <div 
-                        key={user.id} 
-                        onClick={() => setSelectedUser(user)}
-                        style={{ 
-                            padding: '15px 20px', 
-                            cursor: 'pointer', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            backgroundColor: selectedUser?.id === user.id ? '#efefef' : 'transparent' 
-                        }}
-                    >
-                        <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#dbdbdb', marginRight: '12px' }}></div>
-                        <div>
-                            <div style={{ fontWeight: '600' }}>{user.username}</div>
-                            <div style={{ fontSize: '12px', color: '#8e8e8e' }}>{user.email}</div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+            )}
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                {selectedUser ? (
-                    <>
-                        <div style={{ padding: '15px 20px', borderBottom: '1px solid #dbdbdb', fontWeight: 'bold' }}>
-                            {selectedUser.username}
-                        </div>
-                        <div style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-                            {messages.map((msg, index) => (
-                                <div 
-                                    key={index} 
-                                    style={{ 
-                                        alignSelf: msg.senderEmail === currentUserEmail ? 'flex-end' : 'flex-start',
-                                        backgroundColor: msg.senderEmail === currentUserEmail ? '#0095f6' : '#efefef',
-                                        color: msg.senderEmail === currentUserEmail ? 'white' : 'black',
-                                        padding: '8px 16px',
-                                        borderRadius: '20px',
-                                        marginBottom: '8px',
-                                        maxWidth: '60%',
-                                        wordBreak: 'break-word'
-                                    }}
+            {/* RIGHT CHAT WINDOW PANEL */}
+            {(!isMobile || selectedUser) && (
+                <div style={{ flex: 1, display: selectedUser ? 'flex' : (isMobile ? 'none' : 'flex'), flexDirection: 'column', height: '100%' }}>
+                    {selectedUser ? (
+                        <>
+                            {/* CHAT HEADER */}
+                            <div style={{ padding: '15px 20px', borderBottom: '1px solid #dbdbdb', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
+                                {isMobile && (
+                                    <button 
+                                        onClick={() => setSelectedUser(null)} 
+                                        style={{ border: 'none', background: 'none', fontSize: '20px', marginRight: '15px', cursor: 'pointer' }}
+                                    >
+                                        ⬅️
+                                    </button>
+                                )}
+                                <div>{selectedUser.username}</div>
+                            </div>
+
+                            {/* MESSAGES TEXT SCROLL AREA */}
+                            <div style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', backgroundColor: '#fafafa' }}>
+                                {messages.map((msg, index) => (
+                                    <div 
+                                        key={index} 
+                                        style={{ 
+                                            alignSelf: msg.senderEmail === currentUserEmail ? 'flex-end' : 'flex-start',
+                                            backgroundColor: msg.senderEmail === currentUserEmail ? '#0095f6' : '#efefef',
+                                            color: msg.senderEmail === currentUserEmail ? 'white' : 'black',
+                                            padding: '8px 16px',
+                                            borderRadius: '20px',
+                                            marginBottom: '8px',
+                                            maxWidth: '75%',
+                                            wordBreak: 'break-word',
+                                            fontSize: '14px'
+                                        }}
+                                    >
+                                        {msg.content}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* INPUT CHAT FIELD AREA */}
+                            <div style={{ padding: isMobile ? '10px 15px' : '20px', borderTop: '1px solid #dbdbdb', display: 'flex', backgroundColor: '#fff' }}>
+                                <input 
+                                    type="text" 
+                                    value={messageInput}
+                                    onChange={(e) => setMessageInput(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                                    placeholder={connected ? "Message..." : "Connecting..."}
+                                    disabled={!connected}
+                                    style={{ flex: 1, padding: '10px 15px', borderRadius: '25px', border: '1px solid #dbdbdb', outline: 'none', fontSize: '14px' }} 
+                                />
+                                <button 
+                                    onClick={sendMessage} 
+                                    disabled={!connected}
+                                    style={{ marginLeft: '10px', color: connected ? '#0095f6' : '#ccc', border: 'none', background: 'none', fontWeight: 'bold', cursor: 'pointer', fontSize: '14px' }}
                                 >
-                                    {msg.content}
-                                </div>
-                            ))}
+                                    Send
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <h3 style={{ textAlign: 'center', padding: '20px', color: '#8e8e8e', fontWeight: '300' }}>
+                                Select a user to start chatting
+                            </h3>
                         </div>
-                        <div style={{ padding: '20px', borderTop: '1px solid #dbdbdb', display: 'flex' }}>
-                            <input 
-                                type="text" 
-                                value={messageInput}
-                                onChange={(e) => setMessageInput(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                                placeholder={connected ? "Message..." : "Connecting..."}
-                                disabled={!connected}
-                                style={{ flex: 1, padding: '10px 15px', borderRadius: '25px', border: '1px solid #dbdbdb', outline: 'none' }} 
-                            />
-                            <button 
-                                onClick={sendMessage} 
-                                disabled={!connected}
-                                style={{ marginLeft: '10px', color: connected ? '#0095f6' : '#ccc', border: 'none', background: 'none', fontWeight: 'bold', cursor: 'pointer' }}
-                            >
-                                Send
-                            </button>
-                        </div>
-                    </>
-                ) : (
-                    <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <h3 style={{
-    textAlign: 'center',
-    padding: '20px',
-    fontSize: window.innerWidth <= 768 ? '18px' : '24px'
-}}>
-    Select a user to start chatting
-</h3>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
