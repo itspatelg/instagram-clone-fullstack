@@ -10,7 +10,7 @@ import Reels from './components/Reels';
 import EditProfile from './components/EditProfile';
 import Messages from './components/Messages';
 import Notifications from './components/Notifications';
-import AIChat from './components/AIChat'; // Naya Import
+import AIChat from './components/AIChat'; 
 
 // --- Theme Imports ---
 import { ThemeProvider } from './context/ThemeContext'; 
@@ -19,29 +19,41 @@ import './styles/Skeleton.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('userEmail'));
+  
+  // Dynamic screen checker parent level par
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    
     const handleStorageChange = () => {
       setIsAuthenticated(!!localStorage.getItem('userEmail'));
     };
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   return (
     <ThemeProvider>
       <Router>
-        <div style={{ display: 'flex' }}>
+        {/* Mobile par display block hoga taki sidebar content ko squeeze na kare */}
+        <div style={{ display: isMobile ? 'block' : 'flex' }}>
           
           {isAuthenticated && <Sidebar setIsAuthenticated={setIsAuthenticated} />}
           
+          {/* Sabsé Badi Galti Ka Ilaaj: MarginLeft mobile par auto 0px ho jayega */}
           <div style={{ 
-            marginLeft: isAuthenticated ? '240px' : '0', 
+            marginLeft: isAuthenticated ? (isMobile ? '0px' : '240px') : '0', 
             flex: 1, 
             backgroundColor: 'var(--bg-color)', 
             color: 'var(--text-color)',
             minHeight: '100vh',
-            transition: '0.3s'
+            transition: '0.3s ease'
           }}>
             <Routes>
               <Route path="/" element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/login" />} />
